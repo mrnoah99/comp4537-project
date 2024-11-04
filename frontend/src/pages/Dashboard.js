@@ -15,7 +15,7 @@ function Dashboard() {
       navigate('/login');
     } else {
       // Fetch user profile
-      axios.get('http://localhost:8000/api/user/', {
+      axios.get('https://Saerek.pythonanywhere.com/api/user/', {
         headers: {
           Authorization: `Token ${token}`,
         },
@@ -27,7 +27,7 @@ function Dashboard() {
 
         if (response.data.is_superuser) {
           // If admin, fetch the list of all users
-          axios.get('http://localhost:8000/api/users/', {
+          axios.get('https://Saerek.pythonanywhere.com/api/users/', {
             headers: {
               Authorization: `Token ${token}`,
             },

@@ -108,6 +108,7 @@ REST_FRAMEWORK = {
 # CORS configuration
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',  # React frontend URL
+    'https://comp4537project-26158.nodechef.com',
 ]
 
 # Static files (CSS, JavaScript, Images)

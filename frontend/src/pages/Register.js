@@ -11,7 +11,7 @@ function Register() {
   const handleRegister = (e) => {
     e.preventDefault();
     axios
-      .post('http://localhost:8000/api/register/', {
+      .post('https://saerek.pythonanywhere.com/api/register/', {
         username,
         email,
         password,
