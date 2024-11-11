@@ -181,3 +181,6 @@ coverage/
 
 # Ignore migrations
 migrations/
+
+# Project info docs
+milestone1Group4.*
