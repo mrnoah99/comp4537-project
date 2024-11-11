@@ -4,10 +4,39 @@ import axios from 'axios';
 function PromptGenerator() {
     const prompts = [
         "Tell me a story about a brave knight.",
-        "What are some interesting facts about space?",
+        "What is an interesting fact about space?",
         "Explain the theory of relativity in simple terms.",
         "Give me some advice for staying productive.",
         "What are the benefits of learning a new language?",
+        "What is the most popular video game in the world?",
+        "What is the most popular song in the world?",
+        "Who is the most popular singer/band in the world?",
+        "What is the most successful video game of all time?",
+        "What is the most successful board game of all time?",
+        "Tell me a story about a misunderstood scary monster.",
+        "Give me some advice on budgeting.",
+        "How many planets, dwarf planets, and stars are in our solar system? What colours are they? Answer in a list format.",
+        "What year was the United States founded? What year did it gain its independence from Britain?",
+        "What year was Canada founded? What year did it gain its independence from Britain?",
+        "What company developed the Starcraft series of video games?",
+        "What is the company Valve known most for?",
+        "What company develops the Call of Duty series of video games?",
+        "What is the YouTube platform? Who is the most popular creator on it?",
+        "How old is the oldest video game?",
+        "When was the first computer invented?",
+        "What year did the United States land a man on the moon?",
+        "What exponent base is used most often in computing?",
+        "Tell me a story of a pretty princess.",
+        "How many pieces of hardware compose a FULL computer setup? What are each of their names?",
+        "What company developed the original Halo video game trilogy?",
+        "What company develops the newest Halo video games?",
+        "How many Halo video games are there? What are their names? Answer in a list format.",
+        "What does RAM stand for in computing?",
+        "What does the CPU do in a computer?",
+        "What does the GPU do in a computer?",
+        "What are the most common Operating Systems for a computer?",
+        "Who is the British Army man from World War 2 that is accredited as 'the father of the modern computer'?",
+        "What is the difference between RAM and ROM in computing?"
     ];
 
     const [loading, setLoading] = useState(false);
@@ -27,7 +56,7 @@ function PromptGenerator() {
     const handleGenerate = () => {
         setSelectedPrompt();
         setLoading(true);
-        axios.post('http://3.81.53.175:8000/generate', { prompt: selectedPrompt })
+        axios.post('bright-brain.ca/generate', { prompt: selectedPrompt })
             .then((response) => {
                 console.log("API response:", response.data); // Log for debugging
                 setOutput(response.data.response); // Adjust the key if needed
