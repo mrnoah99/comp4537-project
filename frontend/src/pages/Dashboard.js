@@ -15,7 +15,7 @@ function Dashboard() {
       navigate('/login');
     } else {
       // Fetch user profile
-      axios.get('http://localhost:8000/api/user/', {
+      axios.get('https://Saerek.pythonanywhere.com/api/user/', {
         headers: {
           Authorization: `Token ${token}`,
         },
@@ -27,7 +27,7 @@ function Dashboard() {
 
         if (response.data.is_superuser) {
           // If admin, fetch the list of all users
-          axios.get('http://localhost:8000/api/users/', {
+          axios.get('https://Saerek.pythonanywhere.com/api/users/', {
             headers: {
               Authorization: `Token ${token}`,
             },
@@ -55,14 +55,14 @@ function Dashboard() {
   };
 
   return (
-    <div>
+    <div style={containerStyle}>
       {isSuperuser ? (
         // Admin Dashboard
         <div>
-          <h2>Welcome, Admin {username}!</h2>
-          <p>This is the admin dashboard.</p>
-          <h3>All Users:</h3>
-          <table border="1">
+          <h2 style={{ textAlign: 'center', color: '#333' }}>Welcome, Admin {username}!</h2>
+          <p style={textCenterStyle}>This is the admin dashboard.</p>
+          <h3 style={textCenterStyle}>All Users:</h3>
+          <table style={tableStyle}>
             <thead>
               <tr>
                 <th>User ID</th>
@@ -86,14 +86,48 @@ function Dashboard() {
       ) : (
         // User Dashboard
         <div>
-          <h2>Welcome, {username}!</h2>
-          <p>You have made {apiCalls} API calls.</p>
-          <p>Enjoy using our application!</p>
+          <h2 style={{ textAlign: 'center', color: '#333' }}>Welcome, {username}!</h2>
+          <p style={textCenterStyle}>You have made {apiCalls} API calls.</p>
+          <p style={textCenterStyle}>Enjoy using our application!</p>
         </div>
       )}
-      <button onClick={handleLogout}>Logout</button>
+      <button onClick={handleLogout} style={buttonStyle}>Logout</button>
     </div>
   );
 }
+
+// Inline styles
+const containerStyle = {
+  maxWidth: '600px',
+  margin: '50px auto',
+  padding: '20px',
+  borderRadius: '8px',
+  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+  backgroundColor: '#f9f9f9',
+  textAlign: 'center',
+};
+
+const tableStyle = {
+  width: '100%',
+  borderCollapse: 'collapse',
+  marginTop: '20px',
+  fontSize: '1em',
+};
+
+const textCenterStyle = {
+  textAlign: 'center',
+  marginTop: '10px',
+};
+
+const buttonStyle = {
+  padding: '10px 20px',
+  backgroundColor: '#4CAF50',
+  color: 'white',
+  border: 'none',
+  borderRadius: '4px',
+  cursor: 'pointer',
+  fontWeight: 'bold',
+  marginTop: '20px',
+};
 
 export default Dashboard;
