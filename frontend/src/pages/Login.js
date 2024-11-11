@@ -9,7 +9,7 @@ function Login() {
 
   const handleLogin = (e) => {
     e.preventDefault();
-    axios.post('http://localhost:8000/api/login/', {
+    axios.post('https://saerek.pythonanywhere.com/api/login/', {
       username,
       password,
     })
