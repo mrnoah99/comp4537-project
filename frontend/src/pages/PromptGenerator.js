@@ -56,7 +56,7 @@ function PromptGenerator() {
     const handleGenerate = () => {
         setSelectedPrompt();
         setLoading(true);
-        axios.post('bright-brain.ca/generate', { prompt: selectedPrompt })
+        axios.post('https://bright-brain.ca/generate', { prompt: selectedPrompt })
             .then((response) => {
                 console.log("API response:", response.data); // Log for debugging
                 setOutput(response.data.response); // Adjust the key if needed
