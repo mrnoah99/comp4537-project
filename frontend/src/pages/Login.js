@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
+import axiosInstance from '../api/axiosInstance';
 
 function Login() {
   const [username, setUsername] = useState('');
@@ -9,18 +9,21 @@ function Login() {
 
   const handleLogin = (e) => {
     e.preventDefault();
-    axios.post(`${process.env.REACT_APP_API_BASE_URL}/api/login/`, {
+    axiosInstance.post('/api/login/', {
       username,
       password,
     })
-    .then((response) => {
-      localStorage.setItem('authToken', response.data.token);
-      navigate('/dashboard');
-    })
-    .catch((error) => {
-      console.error(error);
-      alert('Login Failed');
-    });
+      .then((response) => {
+        navigate('/dashboard');
+      })
+      .catch((error) => {
+        console.error(error);
+        if (error.response && error.response.data) {
+          alert('Login Failed: ' + JSON.stringify(error.response.data));
+        } else {
+          alert('Login Failed');
+        }
+      });
   };
 
   // Inline styles

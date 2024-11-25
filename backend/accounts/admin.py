@@ -1,11 +1,11 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import CustomUser
+from .models import CustomUser, UserRole, APIUsage
 
 class CustomUserAdmin(UserAdmin):
-    list_display = ('username', 'email', 'is_staff', 'is_superuser', 'api_calls')
-    list_filter = ('is_staff', 'is_superuser', 'is_active')
-    list_editable = ('api_calls',)
+    list_display = ('username', 'email', 'is_staff', 'is_superuser', 'api_calls', 'role')
+    list_filter = ('is_staff', 'is_superuser', 'is_active', 'role')
+    list_editable = ('api_calls', 'role')
     search_fields = ('username', 'email')
     ordering = ('-api_calls',)
 
@@ -13,9 +13,9 @@ class CustomUserAdmin(UserAdmin):
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
         ('Personal Info', {'fields': ('first_name', 'last_name', 'email')}),
-        ('API Information', {'fields': ('api_calls',)}),  # Include api_calls here
+        ('API Information', {'fields': ('api_calls',)}),
         ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser',
-                                    'groups', 'user_permissions')}),
+                                    'groups', 'user_permissions', 'role')}),
         ('Important Dates', {'fields': ('last_login', 'date_joined')}),
     )
 
@@ -23,9 +23,10 @@ class CustomUserAdmin(UserAdmin):
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('username', 'email', 'password1', 'password2', 'api_calls'),
+            'fields': ('username', 'email', 'password1', 'password2', 'api_calls', 'role'),
         }),
     )
 
-# Register the CustomUser model with the customized admin interface
 admin.site.register(CustomUser, CustomUserAdmin)
+admin.site.register(UserRole)
+admin.site.register(APIUsage)

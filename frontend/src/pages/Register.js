@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
-import backgroundImage from '../assets/quiz.avif'; // Import the image
+import axiosInstance from '../api/axiosInstance';
 
 function Register() {
   const [username, setUsername] = useState('');
@@ -11,26 +10,26 @@ function Register() {
 
   const handleRegister = (e) => {
     e.preventDefault();
-    axios
-      .post(`${process.env.REACT_APP_API_BASE_URL}/api/register/`, {
-        username,
-        email,
-        password,
-      })
-      .then(() => {
+    axiosInstance.post('/api/register/', {
+      username,
+      email,
+      password,
+    })
+      .then((response) => {
+        alert('Registration successful!');
         navigate('/login');
       })
       .catch((error) => {
         console.error(error);
         if (error.response && error.response.data) {
-          alert(`Registration Failed: ${JSON.stringify(error.response.data)}`);
+          alert('Registration Failed: ' + JSON.stringify(error.response.data));
         } else {
-          alert('An error occurred. Please try again.');
+          alert('Registration Failed');
         }
       });
   };
 
-  // Inline styles with background image
+  // Inline styles
   const containerStyle = {
     maxWidth: '400px',
     margin: '50px auto',
@@ -38,16 +37,6 @@ function Register() {
     borderRadius: '8px',
     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
     backgroundColor: '#f9f9f9',
-  };
-
-  const pageStyle = {
-    // backgroundImage: `url(${backgroundImage})`,
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-    minHeight: '100vh',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
   };
 
   const inputStyle = {
@@ -80,40 +69,38 @@ function Register() {
   };
 
   return (
-    <div style={pageStyle}>
-      <div style={containerStyle}>
-        <h2 style={{ textAlign: 'center', color: '#333' }}>Register</h2>
-        <form onSubmit={handleRegister}>
-          <input
-            type="text"
-            placeholder="Username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-            style={inputStyle}
-          />
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            style={inputStyle}
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            style={inputStyle}
-          />
-          <button type="submit" style={buttonStyle}>Register</button>
-        </form>
-        <p style={textCenterStyle}>
-          Already have an account? <Link to="/login" style={linkStyle}>Login here</Link>
-        </p>
-      </div>
+    <div style={containerStyle}>
+      <h2 style={{ textAlign: 'center', color: '#333' }}>Register</h2>
+      <form onSubmit={handleRegister}>
+        <input
+          type="text"
+          placeholder="Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          required
+          style={inputStyle}
+        />
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          style={inputStyle}
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+          style={inputStyle}
+        />
+        <button type="submit" style={buttonStyle}>Register</button>
+      </form>
+      <p style={textCenterStyle}>
+        Already have an account? <Link to="/login" style={linkStyle}>Login here</Link>
+      </p>
     </div>
   );
 }

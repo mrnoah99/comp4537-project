@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import axiosInstance from '../api/axiosInstance';
 
 function Dashboard() {
   const [username, setUsername] = useState('');
@@ -10,16 +10,8 @@ function Dashboard() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem('authToken');
-    if (!token) {
-      navigate('/login');
-    } else {
-      // Fetch user profile
-      axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/user/`, {
-        headers: {
-          Authorization: `Token ${token}`,
-        },
-      })
+    // Fetch user profile
+    axiosInstance.get('/api/user/')
       .then((response) => {
         setUsername(response.data.username);
         setApiCalls(response.data.api_calls);
@@ -27,18 +19,14 @@ function Dashboard() {
 
         if (response.data.is_superuser) {
           // If admin, fetch the list of all users
-          axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/users/`, {
-            headers: {
-              Authorization: `Token ${token}`,
-            },
-          })
-          .then((res) => {
-            setUserList(res.data);
-          })
-          .catch((error) => {
-            console.error('Error fetching user list:', error);
-            alert('Failed to fetch user list');
-          });
+          axiosInstance.get('/api/users/')
+            .then((res) => {
+              setUserList(res.data);
+            })
+            .catch((error) => {
+              console.error('Error fetching user list:', error);
+              alert('Failed to fetch user list');
+            });
         }
       })
       .catch((error) => {
@@ -46,12 +34,50 @@ function Dashboard() {
         alert('Failed to fetch user data');
         navigate('/login');
       });
-    }
   }, [navigate]);
 
   const handleLogout = () => {
-    localStorage.removeItem('authToken');
-    navigate('/login');
+    axiosInstance.post('/api/logout/')
+      .then(() => {
+        navigate('/login');
+      })
+      .catch((error) => {
+        console.error('Logout failed:', error);
+      });
+  };
+
+  // Inline styles
+  const containerStyle = {
+    maxWidth: '600px',
+    margin: '50px auto',
+    padding: '20px',
+    borderRadius: '8px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+    backgroundColor: '#f9f9f9',
+    textAlign: 'center',
+  };
+
+  const tableStyle = {
+    width: '100%',
+    borderCollapse: 'collapse',
+    marginTop: '20px',
+    fontSize: '1em',
+  };
+
+  const textCenterStyle = {
+    textAlign: 'center',
+    marginTop: '10px',
+  };
+
+  const buttonStyle = {
+    padding: '10px 20px',
+    backgroundColor: '#4CAF50',
+    color: 'white',
+    border: 'none',
+    borderRadius: '4px',
+    cursor: 'pointer',
+    fontWeight: 'bold',
+    marginTop: '20px',
   };
 
   return (
@@ -69,6 +95,7 @@ function Dashboard() {
                 <th>Username</th>
                 <th>Email</th>
                 <th>API Calls</th>
+                <th>Role</th>
               </tr>
             </thead>
             <tbody>
@@ -78,6 +105,7 @@ function Dashboard() {
                   <td>{user.username}</td>
                   <td>{user.email}</td>
                   <td>{user.api_calls}</td>
+                  <td>{user.role ? user.role.role_name : 'N/A'}</td>
                 </tr>
               ))}
             </tbody>
@@ -95,39 +123,5 @@ function Dashboard() {
     </div>
   );
 }
-
-// Inline styles
-const containerStyle = {
-  maxWidth: '600px',
-  margin: '50px auto',
-  padding: '20px',
-  borderRadius: '8px',
-  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-  backgroundColor: '#f9f9f9',
-  textAlign: 'center',
-};
-
-const tableStyle = {
-  width: '100%',
-  borderCollapse: 'collapse',
-  marginTop: '20px',
-  fontSize: '1em',
-};
-
-const textCenterStyle = {
-  textAlign: 'center',
-  marginTop: '10px',
-};
-
-const buttonStyle = {
-  padding: '10px 20px',
-  backgroundColor: '#4CAF50',
-  color: 'white',
-  border: 'none',
-  borderRadius: '4px',
-  cursor: 'pointer',
-  fontWeight: 'bold',
-  marginTop: '20px',
-};
 
 export default Dashboard;
