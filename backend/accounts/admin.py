@@ -1,11 +1,11 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import CustomUser, UserRole, APIUsage
+from .models import CustomUser, APIUsage
 
 class CustomUserAdmin(UserAdmin):
-    list_display = ('username', 'email', 'is_staff', 'is_superuser', 'api_calls', 'role')
-    list_filter = ('is_staff', 'is_superuser', 'is_active', 'role')
-    list_editable = ('api_calls', 'role')
+    list_display = ('username', 'email', 'is_staff', 'is_superuser', 'api_calls')
+    list_filter = ('is_staff', 'is_superuser', 'is_active')
+    list_editable = ('api_calls',)
     search_fields = ('username', 'email')
     ordering = ('-api_calls',)
 
@@ -15,7 +15,7 @@ class CustomUserAdmin(UserAdmin):
         ('Personal Info', {'fields': ('first_name', 'last_name', 'email')}),
         ('API Information', {'fields': ('api_calls',)}),
         ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser',
-                                    'groups', 'user_permissions', 'role')}),
+                                    'groups', 'user_permissions')}),
         ('Important Dates', {'fields': ('last_login', 'date_joined')}),
     )
 
@@ -23,10 +23,9 @@ class CustomUserAdmin(UserAdmin):
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('username', 'email', 'password1', 'password2', 'api_calls', 'role'),
+            'fields': ('username', 'email', 'password1', 'password2', 'api_calls'),
         }),
     )
 
 admin.site.register(CustomUser, CustomUserAdmin)
-admin.site.register(UserRole)
 admin.site.register(APIUsage)

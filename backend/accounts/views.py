@@ -116,7 +116,6 @@ class UserProfileView(APIView):
             'email': user.email,
             'api_calls': user.api_calls,
             'is_superuser': user.is_superuser,
-            'role': user.role.role_name if user.role else None,
         }
         return Response(data)
 
