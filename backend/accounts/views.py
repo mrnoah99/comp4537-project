@@ -1,5 +1,3 @@
-# accounts/views.py
-
 from rest_framework import generics, permissions, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -17,9 +15,9 @@ from django.conf import settings
 from django.middleware import csrf
 from rest_framework_simplejwt.exceptions import TokenError
 from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_exempt
+from django.db.models import Sum
+from django.middleware.csrf import get_token
 
-@method_decorator(csrf_exempt, name='dispatch')
 class RegisterView(generics.CreateAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
@@ -48,13 +46,20 @@ class RegisterView(generics.CreateAPIView):
             path=settings.SIMPLE_JWT['AUTH_COOKIE_PATH'],
         )
 
-        # Set the CSRF token
-        csrf.get_token(request)
+        csrf_token = get_token(request)
+        response.set_cookie(
+            'csrftoken',
+            csrf_token,
+            max_age=3600,
+            httponly=False,
+            secure=settings.SIMPLE_JWT['AUTH_COOKIE_SECURE'],
+            samesite=settings.SIMPLE_JWT['AUTH_COOKIE_SAMESITE'],
+            path='/',
+        )
 
         response.data = {'message': 'Registration successful'}
         return response
 
-@method_decorator(csrf_exempt, name='dispatch')
 class LoginView(TokenObtainPairView):
     permission_classes = [permissions.AllowAny]
 
@@ -90,12 +95,19 @@ class LoginView(TokenObtainPairView):
             path=settings.SIMPLE_JWT['AUTH_COOKIE_PATH'],
         )
 
-        # Set the CSRF token
-        csrf.get_token(request)
+        csrf_token = get_token(request)
+        response.set_cookie(
+            'csrftoken',
+            csrf_token,
+            max_age=3600,
+            httponly=False,
+            secure=settings.SIMPLE_JWT['AUTH_COOKIE_SECURE'],
+            samesite=settings.SIMPLE_JWT['AUTH_COOKIE_SAMESITE'],
+            path='/',
+        )
 
         return response
 
-@method_decorator(csrf_exempt, name='dispatch')
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -103,9 +115,9 @@ class LogoutView(APIView):
         response = Response({'message': 'Logged out successfully'}, status=status.HTTP_200_OK)
         response.delete_cookie(settings.SIMPLE_JWT['AUTH_COOKIE'])
         response.delete_cookie(settings.SIMPLE_JWT['AUTH_COOKIE_REFRESH'])
+        response.delete_cookie('csrftoken')  # Delete the CSRF cookie
         return response
 
-@method_decorator(csrf_exempt, name='dispatch')
 class UserProfileView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -149,7 +161,6 @@ class CookieTokenRefreshView(TokenRefreshView):
 
         return response
 
-@csrf_exempt
 @api_view(['GET'])
 @permission_classes([IsAdminUser])
 def user_list(request):
@@ -157,10 +168,27 @@ def user_list(request):
     serializer = UserListSerializer(users, many=True)
     return Response(serializer.data)
 
-@csrf_exempt
 @api_view(['GET'])
 @permission_classes([IsAdminUser])
 def api_usage_list(request):
     usages = APIUsage.objects.all()
     serializer = APIUsageSerializer(usages, many=True)
     return Response(serializer.data)
+
+@api_view(['GET'])
+@permission_classes([IsAdminUser])
+def endpoint_stats(request):
+    # Aggregate data for endpoint stats
+    endpoint_stats = APIUsage.objects.values('method', 'endpoint').annotate(
+        total_requests=Sum('count')
+    ).order_by('-total_requests')
+    return Response(endpoint_stats)
+
+@api_view(['GET'])
+@permission_classes([IsAdminUser])
+def user_api_consumption(request):
+    # Aggregate data for user stats
+    user_stats = APIUsage.objects.values('user__id', 'user__username', 'user__email').annotate(
+        total_requests=Sum('count')
+    ).order_by('-total_requests')
+    return Response(user_stats)

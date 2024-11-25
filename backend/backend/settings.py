@@ -40,7 +40,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # 'backend.middleware.APIUsageMiddleware',
+    'accounts.middleware.APIUsageMiddleware'
 ]
 
 ROOT_URLCONF = 'backend.urls'
@@ -97,12 +97,10 @@ SIMPLE_JWT = {
     'AUTH_COOKIE': 'access_token',             # Name of the access token cookie
     'AUTH_COOKIE_REFRESH': 'refresh_token',    # Name of the refresh token cookie
     'AUTH_COOKIE_DOMAIN': None,
-    'AUTH_COOKIE_SECURE': False,               # Set to True in production with HTTPS
+    'AUTH_COOKIE_SECURE': True,               # Set to True in production with HTTPS
     'AUTH_COOKIE_HTTP_ONLY': True,
     'AUTH_COOKIE_PATH': '/',
     'AUTH_COOKIE_SAMESITE': 'Lax',             # Can be 'Lax', 'Strict', or 'None'
-    # Do not set 'AUTH_HEADER_TYPES', or leave it as default ('Bearer',)
-    # 'AUTH_HEADER_TYPES': ('Bearer',),        # Default value
 }
 
 # CORS configuration

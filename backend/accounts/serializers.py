@@ -19,7 +19,6 @@ class UserListSerializer(serializers.ModelSerializer):
         model = CustomUser
         fields = ['id', 'username', 'email', 'api_calls']
 
-
 class APIUsageSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField()
 

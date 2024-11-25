@@ -137,3 +137,6 @@ Access the frontend in your browser at http://localhost:3000.
 | /api/user/     | GET    | Get current user profile          | Yes           |
 | /api/users/    | GET    | Get list of all users (admin-only)| Yes           |
 
+## Usage of AI
+
+In creation of this assignment, chatGPT, Gemeni and Copilot were used

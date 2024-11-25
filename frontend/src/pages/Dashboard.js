@@ -7,6 +7,8 @@ function Dashboard() {
   const [apiCalls, setApiCalls] = useState(0);
   const [isSuperuser, setIsSuperuser] = useState(false);
   const [userList, setUserList] = useState([]);
+  const [endpointStats, setEndpointStats] = useState([]);
+  const [userApiConsumption, setUserApiConsumption] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -26,6 +28,26 @@ function Dashboard() {
             .catch((error) => {
               console.error('Error fetching user list:', error);
               alert('Failed to fetch user list');
+            });
+
+          // Fetch endpoint stats
+          axiosInstance.get('/api/endpoint-stats/')
+            .then((res) => {
+              setEndpointStats(res.data);
+            })
+            .catch((error) => {
+              console.error('Error fetching endpoint stats:', error);
+              alert('Failed to fetch endpoint stats');
+            });
+
+          // Fetch user API consumption
+          axiosInstance.get('/api/user-api-consumption/')
+            .then((res) => {
+              setUserApiConsumption(res.data);
+            })
+            .catch((error) => {
+              console.error('Error fetching user API consumption:', error);
+              alert('Failed to fetch user API consumption');
             });
         }
       })
@@ -48,7 +70,7 @@ function Dashboard() {
 
   // Inline styles
   const containerStyle = {
-    maxWidth: '600px',
+    maxWidth: '800px',
     margin: '50px auto',
     padding: '20px',
     borderRadius: '8px',
@@ -62,6 +84,18 @@ function Dashboard() {
     borderCollapse: 'collapse',
     marginTop: '20px',
     fontSize: '1em',
+  };
+
+  const thStyle = {
+    backgroundColor: '#f2f2f2',
+    padding: '8px',
+    border: '1px solid #ddd',
+  };
+
+  const tdStyle = {
+    padding: '8px',
+    border: '1px solid #ddd',
+    textAlign: 'center',
   };
 
   const textCenterStyle = {
@@ -87,25 +121,69 @@ function Dashboard() {
         <div>
           <h2 style={{ textAlign: 'center', color: '#333' }}>Welcome, Admin {username}!</h2>
           <p style={textCenterStyle}>This is the admin dashboard.</p>
+
+          {/* Endpoint Statistics */}
+          <h3 style={textCenterStyle}>Endpoint Statistics:</h3>
+          <table style={tableStyle}>
+            <thead>
+              <tr>
+                <th style={thStyle}>Method</th>
+                <th style={thStyle}>Endpoint</th>
+                <th style={thStyle}>Total Requests</th>
+              </tr>
+            </thead>
+            <tbody>
+              {endpointStats.map((stat, index) => (
+                <tr key={index}>
+                  <td style={tdStyle}>{stat.method}</td>
+                  <td style={tdStyle}>{stat.endpoint}</td>
+                  <td style={tdStyle}>{stat.total_requests}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          {/* User API Consumption */}
+          <h3 style={textCenterStyle}>User API Consumption:</h3>
+          <table style={tableStyle}>
+            <thead>
+              <tr>
+                <th style={thStyle}>User ID</th>
+                <th style={thStyle}>Username</th>
+                <th style={thStyle}>Email</th>
+                <th style={thStyle}>Total Requests</th>
+              </tr>
+            </thead>
+            <tbody>
+              {userApiConsumption.map((stat) => (
+                <tr key={stat.user__id}>
+                  <td style={tdStyle}>{stat.user__id}</td>
+                  <td style={tdStyle}>{stat.user__username}</td>
+                  <td style={tdStyle}>{stat.user__email}</td>
+                  <td style={tdStyle}>{stat.total_requests}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          {/* Existing User List */}
           <h3 style={textCenterStyle}>All Users:</h3>
           <table style={tableStyle}>
             <thead>
               <tr>
-                <th>User ID</th>
-                <th>Username</th>
-                <th>Email</th>
-                <th>API Calls</th>
-                <th>Role</th>
+                <th style={thStyle}>User ID</th>
+                <th style={thStyle}>Username</th>
+                <th style={thStyle}>Email</th>
+                <th style={thStyle}>API Calls</th>
               </tr>
             </thead>
             <tbody>
               {userList.map((user) => (
                 <tr key={user.id}>
-                  <td>{user.id}</td>
-                  <td>{user.username}</td>
-                  <td>{user.email}</td>
-                  <td>{user.api_calls}</td>
-                  <td>{user.role ? user.role.role_name : 'N/A'}</td>
+                  <td style={tdStyle}>{user.id}</td>
+                  <td style={tdStyle}>{user.username}</td>
+                  <td style={tdStyle}>{user.email}</td>
+                  <td style={tdStyle}>{user.api_calls}</td>
                 </tr>
               ))}
             </tbody>
