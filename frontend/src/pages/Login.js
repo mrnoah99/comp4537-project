@@ -9,7 +9,7 @@ function Login() {
 
   const handleLogin = (e) => {
     e.preventDefault();
-    axios.post('https://saerek.pythonanywhere.com/api/login/', {
+    axios.post(`${process.env.REACT_APP_API_BASE_URL}/api/login/`, {
       username,
       password,
     })

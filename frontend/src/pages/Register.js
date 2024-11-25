@@ -12,7 +12,7 @@ function Register() {
   const handleRegister = (e) => {
     e.preventDefault();
     axios
-      .post('https://saerek.pythonanywhere.com/api/register/', {
+      .post(`${process.env.REACT_APP_API_BASE_URL}/api/register/`, {
         username,
         email,
         password,

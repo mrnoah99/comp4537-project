@@ -6,7 +6,7 @@ class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
 
     class Meta:
-        model = CustomUser  # Corrected assignment
+        model = CustomUser
         fields = ('id', 'username', 'email', 'password', 'api_calls')
 
     def create(self, validated_data):
