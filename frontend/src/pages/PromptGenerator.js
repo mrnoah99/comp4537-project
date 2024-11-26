@@ -1,5 +1,8 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from 'react';
+import axiosInstance from '../api/axiosInstance';
+import backgroundImage from '../assets/spiral.png';
+import brightBrainLogo from '../assets/bright-brain-logo.webp';
+import { useNavigate } from 'react-router-dom';
 
 function PromptGenerator() {
     const prompts = [
@@ -40,26 +43,43 @@ function PromptGenerator() {
     ];
 
     const [loading, setLoading] = useState(false);
+    const [apiCalls, setApiCalls] = useState(0);
+    const [hasExceededLimit, setHasExceededLimit] = useState(false);
+    const navigate = useNavigate();
     let selectedPrompt = "";
+
+    useEffect(() => {
+        axiosInstance.get('/api/user/')
+            .then((response) => {
+                setApiCalls(response.data.api_calls);
+                if (response.data.api_calls > 20) {
+                    setHasExceededLimit(true);
+                }
+            })
+            .catch(() => {
+                alert('Failed to fetch user data');
+                navigate('/login');
+            });
+    }, [navigate]);
 
     const setSelectedPrompt = () => {
         selectedPrompt = prompts[Math.floor(Math.random() * prompts.length)];
         let promptElement = document.getElementById('prompt');
         promptElement.textContent = selectedPrompt;
-    }
+    };
 
     const setOutput = (responseString) => {
         let output = document.getElementById('output');
         output.value = responseString;
-    }
+    };
 
     const handleGenerate = () => {
         setSelectedPrompt();
         setLoading(true);
-        axios.post('https://bright-brain.ca/generate', { prompt: selectedPrompt })
+        axiosInstance.post('https://bright-brain.ca/generate', { prompt: selectedPrompt })
             .then((response) => {
-                console.log("API response:", response.data); // Log for debugging
-                setOutput(response.data.response); // Adjust the key if needed
+                console.log("API response:", response.data);
+                setOutput(response.data.response);
             })
             .catch((error) => {
                 console.error("Error:", error);
@@ -70,58 +90,126 @@ function PromptGenerator() {
             });
     };
 
+    const handleLogout = () => {
+        axiosInstance.post('/api/logout/')
+            .then(() => navigate('/login'))
+            .catch(() => alert('Logout failed'));
+    };
+
+    const pageStyle = {
+        backgroundImage: `url(${backgroundImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        height: '100vh',
+        width: '100vw',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        flexDirection: 'column',
+        margin: 0,
+        padding: 0,
+    };
+
+    const containerStyle = {
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        borderRadius: '10px',
+        padding: '20px',
+        width: '90%',
+        maxWidth: '800px',
+        color: 'white',
+        textAlign: 'center',
+        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)',
+    };
+
+    const promptStyle = {
+        fontSize: '1.2em',
+        marginBottom: '20px',
+    };
+
+    const buttonStyle = {
+        padding: '10px 20px',
+        backgroundColor: '#007bff',
+        color: 'white',
+        border: 'none',
+        borderRadius: '5px',
+        cursor: 'pointer',
+        fontWeight: 'bold',
+        transition: 'background-color 0.3s ease',
+        marginBottom: '10px',
+    };
+
+    const textAreaStyle = {
+        width: '90%',
+        height: '200px',
+        padding: '10px',
+        borderRadius: '4px',
+        border: '1px solid rgba(255, 255, 255, 0.3)',
+        resize: 'none',
+        fontSize: '1em',
+        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+        color: 'white',
+    };
+
+    const logoStyle = {
+        width: '100px',
+        height: '100px',
+        marginRight: '15px',
+    };
+
+    const headerBoxStyle = {
+        maxWidth: '800px',
+        marginBottom: '20px',
+        padding: '30px',
+        borderRadius: '8px',
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5)',
+        color: '#fff',
+        display: 'flex',
+        alignItems: 'center',
+        textAlign: 'left',
+        minHeight: '100px',
+        minWidth: '800px',
+    };
+
+    const titleStyle = {
+        margin: 0,
+        fontSize: '2rem',
+    };
+
     return (
-        <div style={containerStyle}>
-            <h2 style={{ textAlign: 'center', color: '#333' }}>Random Prompt Generator</h2>
-            <p style={promptStyle}><strong>Prompt:</strong><span id="prompt"></span></p>
-            <button onClick={handleGenerate} style={buttonStyle} disabled={loading}>
-                {loading ? 'Generating...' : 'Generate Response'}
-            </button>
-            <textarea
-                id="output"
-                readOnly
-                placeholder="Output will appear here..."
-                style={textAreaStyle}
-            />
+        <div style={pageStyle}>
+            <div style={headerBoxStyle}>
+                <img src={brightBrainLogo} alt="Bright Brain Logo" style={logoStyle} />
+                <h1 style={titleStyle}>Bright Brain</h1>
+            </div>
+
+            <div style={containerStyle}>
+                <h3 style={{ marginBottom: '20px' }}>Random Prompt Generator</h3>
+                <p style={promptStyle}><strong>Prompt:</strong> <span id="prompt"></span></p>
+                <button onClick={handleGenerate} style={buttonStyle} disabled={loading}>
+                    {loading ? 'Generating...' : 'Generate Response'}
+                </button>
+                <textarea
+                    id="output"
+                    readOnly
+                    placeholder="Output will appear here..."
+                    style={textAreaStyle}
+                />
+                {hasExceededLimit && (
+                    <p style={{ color: 'red', marginTop: '20px' }}>
+                        You have exceeded your 20 API calls.
+                    </p>
+                )}
+                <button
+                    onClick={handleLogout}
+                    style={{ ...buttonStyle, marginTop: '10px' }}
+                >
+                    Logout
+                </button>
+            </div>
         </div>
     );
 }
-
-// Inline styles
-const containerStyle = {
-    maxWidth: '600px',
-    margin: '50px auto',
-    padding: '20px',
-    borderRadius: '8px',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-    backgroundColor: '#f9f9f9',
-    textAlign: 'center',
-};
-
-const promptStyle = {
-    fontSize: '1.2em',
-    marginBottom: '20px',
-};
-
-const buttonStyle = {
-    padding: '10px 20px',
-    backgroundColor: '#4CAF50',
-    color: 'white',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer',
-    fontWeight: 'bold',
-    marginBottom: '20px',
-};
-
-const textAreaStyle = {
-    width: '100%',
-    height: '200px',
-    padding: '10px',
-    borderRadius: '4px',
-    border: '1px solid #ccc',
-    resize: 'none',
-    fontSize: '1em',
-};
 
 export default PromptGenerator;
