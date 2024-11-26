@@ -2,21 +2,16 @@ from rest_framework import generics, permissions, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
-from .serializers import (
-    UserSerializer,
-    UserListSerializer,
-    APIUsageSerializer,
-)
+from .serializers import UserSerializer, UserListSerializer, APIUsageSerializer
 from .models import CustomUser, APIUsage
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from rest_framework_simplejwt.views import TokenObtainPairView
 from django.conf import settings
-from django.middleware import csrf
-from rest_framework_simplejwt.exceptions import TokenError
-from django.utils.decorators import method_decorator
-from django.db.models import Sum
 from django.middleware.csrf import get_token
+from rest_framework_simplejwt.exceptions import TokenError
+from django.db.models import Sum
+from django.utils import timezone
 
 class RegisterView(generics.CreateAPIView):
     queryset = CustomUser.objects.all()
@@ -131,7 +126,7 @@ class UserProfileView(APIView):
         }
         return Response(data)
 
-class CookieTokenRefreshView(TokenRefreshView):
+class CookieTokenRefreshView(TokenObtainPairView):
     def post(self, request, *args, **kwargs):
         refresh_token = request.COOKIES.get(settings.SIMPLE_JWT['AUTH_COOKIE_REFRESH'])
 
@@ -178,17 +173,142 @@ def api_usage_list(request):
 @api_view(['GET'])
 @permission_classes([IsAdminUser])
 def endpoint_stats(request):
-    # Aggregate data for endpoint stats
-    endpoint_stats = APIUsage.objects.values('method', 'endpoint').annotate(
-        total_requests=Sum('count')
-    ).order_by('-total_requests')
-    return Response(endpoint_stats)
+    endpoints = [
+        {'endpoint': 'api/register/', 'method': 'POST'},
+        {'endpoint': 'api/login/', 'method': 'POST'},
+        {'endpoint': 'api/logout/', 'method': 'POST'},
+        {'endpoint': 'api/user/', 'method': 'GET'},
+        {'endpoint': 'api/users/', 'method': 'GET'},
+        {'endpoint': 'api/users/<int:pk>/update/', 'method': 'PUT'},
+        {'endpoint': 'api/users/<int:pk>/delete/', 'method': 'DELETE'},
+        {'endpoint': 'api/api-usage/', 'method': 'GET'},
+        {'endpoint': 'api/endpoint-stats/', 'method': 'GET'},
+        {'endpoint': 'api/user-api-consumption/', 'method': 'GET'},
+        {'endpoint': 'api/llm-call/', 'method': 'POST'},
+        {'endpoint': 'api/api-usage/create/', 'method': 'POST'},
+        {'endpoint': 'api/token/refresh/', 'method': 'POST'},
+        {'endpoint': 'api/user/update-email/', 'method': 'PATCH'},
+    ]
+
+    stats = []
+
+    for endpoint in endpoints:
+        total_requests = APIUsage.objects.filter(
+            endpoint=endpoint['endpoint'],
+            method=endpoint['method']
+        ).aggregate(total=Sum('count'))['total'] or 0
+        stats.append({
+            'endpoint': endpoint['endpoint'],
+            'method': endpoint['method'],
+            'total_requests': total_requests,
+        })
+
+    return Response(stats)
 
 @api_view(['GET'])
 @permission_classes([IsAdminUser])
 def user_api_consumption(request):
-    # Aggregate data for user stats
-    user_stats = APIUsage.objects.values('user__id', 'user__username', 'user__email').annotate(
-        total_requests=Sum('count')
-    ).order_by('-total_requests')
-    return Response(user_stats)
+    # Get all users
+    users = CustomUser.objects.all()
+    stats = []
+
+    for user in users:
+        total_requests = APIUsage.objects.filter(user=user).aggregate(total=Sum('count'))['total'] or 0
+        stats.append({
+            'user_id': user.id,
+            'username': user.username,
+            'email': user.email,
+            'total_requests': total_requests,
+        })
+
+    return Response(stats)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def make_llm_api_call(request):
+    user = request.user
+
+    # Simulate API call to LLM model
+    user.api_calls += 1
+    user.save()
+
+    # Record API usage
+    api_usage, created = APIUsage.objects.get_or_create(
+        user=user,
+        endpoint='api/llm-call/',
+        method='POST',
+        defaults={'count': 1}
+    )
+    if not created:
+        api_usage.count += 1
+        api_usage.last_accessed = timezone.now()
+        api_usage.save()
+    else:
+        api_usage.last_accessed = timezone.now()
+        api_usage.save()
+
+    response_data = {
+        'message': 'LLM model response',
+        'data': 'Simulated response from the LLM model.'
+    }
+    return Response(response_data, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+@permission_classes([IsAdminUser])
+def create_api_usage(request):
+    serializer = APIUsageSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# Update user
+@api_view(['PUT'])
+@permission_classes([IsAdminUser])
+def update_user(request, pk):
+    try:
+        user_to_update = CustomUser.objects.get(pk=pk)
+    except CustomUser.DoesNotExist:
+        return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    # Prevent editing admin users
+    if user_to_update.is_superuser:
+        return Response({'error': 'Cannot edit admin users'}, status=status.HTTP_403_FORBIDDEN)
+
+    serializer = UserSerializer(user_to_update, data=request.data, partial=False)
+
+    if serializer.is_valid():
+        serializer.save()
+        return Response({'message': 'User updated successfully', 'data': serializer.data})
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# Delete user
+@api_view(['DELETE'])
+@permission_classes([IsAdminUser])
+def delete_user(request, pk):
+    try:
+        user_to_delete = CustomUser.objects.get(pk=pk)
+    except CustomUser.DoesNotExist:
+        return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    # Prevent deleting admin users
+    if user_to_delete.is_superuser:
+        return Response({'error': 'Cannot delete admin users'}, status=status.HTTP_403_FORBIDDEN)
+
+    user_to_delete.delete()
+    return Response({'message': 'User deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+
+@api_view(['PATCH'])
+@permission_classes([IsAuthenticated])
+def update_user_email(request):
+    user = request.user
+    serializer = UserSerializer(user, data=request.data, partial=True)
+    serializer.fields['username'].required = False
+    serializer.fields['password'].required = False
+    serializer.fields['api_calls'].required = False
+    serializer.fields['is_superuser'].required = False
+
+    if serializer.is_valid():
+        serializer.save()
+        return Response({'message': 'Email updated successfully'})
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
