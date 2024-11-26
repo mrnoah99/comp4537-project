@@ -1,5 +1,6 @@
 from django.urls import resolve
 from .models import APIUsage
+from django.utils import timezone
 
 class APIUsageMiddleware:
     def __init__(self, get_response):
@@ -29,6 +30,10 @@ class APIUsageMiddleware:
                 )
                 if not created:
                     api_usage.count += 1
+                    api_usage.last_accessed = timezone.now()
+                    api_usage.save()
+                else:
+                    api_usage.last_accessed = timezone.now()
                     api_usage.save()
             else:
                 # Optionally handle anonymous users

@@ -11,6 +11,10 @@ function Dashboard() {
   const [userList, setUserList] = useState([]);
   const [endpointStats, setEndpointStats] = useState([]);
   const [userApiConsumption, setUserApiConsumption] = useState([]);
+  const [editingUser, setEditingUser] = useState(null);
+  const [userEditFormData, setUserEditFormData] = useState({});
+  const [editingEmail, setEditingEmail] = useState(false);
+  const [emailFormData, setEmailFormData] = useState({ email: '' });
   const navigate = useNavigate();
   let alertShown = false;
 
@@ -27,30 +31,171 @@ function Dashboard() {
         }
 
         if (response.data.is_superuser) {
-          axiosInstance.get('/api/users/')
-            .then((res) => setUserList(res.data))
-            .catch((error) => alert('Failed to fetch user list'));
-
-          axiosInstance.get('/api/endpoint-stats/')
-            .then((res) => setEndpointStats(res.data))
-            .catch((error) => alert('Failed to fetch endpoint stats'));
-
-          axiosInstance.get('/api/user-api-consumption/')
-            .then((res) => setUserApiConsumption(res.data))
-            .catch((error) => alert('Failed to fetch user API consumption'));
+          // If admin, fetch additional data
+          fetchAdminData();
         }
       })
-      .catch(() => {
+      .catch((error) => {
+        console.error('Error fetching user profile:', error);
         alert('Failed to fetch user data');
         navigate('/login');
       });
   }, [navigate]);
 
+  const fetchAdminData = () => {
+    // Fetch the list of all users
+    axiosInstance.get('/api/users/')
+      .then((res) => {
+        setUserList(res.data);
+      })
+      .catch((error) => {
+        console.error('Error fetching user list:', error);
+        alert('Failed to fetch user list');
+      });
+    axiosInstance.get('/api/users/')
+      .then((res) => setUserList(res.data))
+      .catch((error) => alert('Failed to fetch user list'));
+
+    // Fetch endpoint stats
+    axiosInstance.get('/api/endpoint-stats/')
+      .then((res) => {
+        setEndpointStats(res.data);
+      })
+      .catch((error) => {
+        console.error('Error fetching endpoint stats:', error);
+        alert('Failed to fetch endpoint stats');
+      });
+
+    // Fetch user API consumption
+    axiosInstance.get('/api/user-api-consumption/')
+      .then((res) => {
+        console.log('User API Consumption:', res.data);
+        setUserApiConsumption(res.data);
+      })
+      .catch((error) => {
+        console.error('Error fetching user API consumption:', error);
+        alert('Failed to fetch user API consumption');
+      });
+  };
+
+
   const handleLogout = () => {
     axiosInstance.post('/api/logout/')
-      .then(() => navigate('/login'))
-      .catch(() => alert('Logout failed'));
+      .then(() => {
+        navigate('/login');
+      })
+      .catch((error) => {
+        console.error('Logout failed:', error);
+      });
   };
+
+  // Handle Edit User Click
+  const handleUserEditClick = (user) => {
+    setEditingUser(user);
+    setUserEditFormData({
+      username: user.username,
+      email: user.email,
+      api_calls: user.api_calls,
+      password: '',
+    });
+  };
+
+  // Handle User Input Change
+  const handleUserInputChange = (e) => {
+    const { name, value } = e.target;
+    setUserEditFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  // Handle User Form Submit (uses PUT method)
+  const handleUserFormSubmit = (e) => {
+    e.preventDefault();
+    const updatedUserData = {
+      username: userEditFormData.username,
+      email: userEditFormData.email,
+      api_calls: userEditFormData.api_calls,
+    };
+
+    // If password is provided, include it
+    if (userEditFormData.password) {
+      updatedUserData.password = userEditFormData.password;
+    }
+
+    axiosInstance.put(`/api/users/${editingUser.id}/update/`, updatedUserData)
+      .then((res) => {
+        alert('User updated successfully');
+        // Refresh data
+        fetchAdminData();
+        // Close the edit form
+        setEditingUser(null);
+      })
+      .catch((error) => {
+        console.error('Error updating user:', error);
+        // Display specific error messages if available
+        if (error.response && error.response.data) {
+          alert(`Failed to update user: ${JSON.stringify(error.response.data)}`);
+        } else {
+          alert('Failed to update user');
+        }
+      });
+  };
+
+  // Handle Delete User
+  const handleUserDelete = (id) => {
+    if (window.confirm('Are you sure you want to delete this user?')) {
+      axiosInstance.delete(`/api/users/${id}/delete/`)
+        .then(() => {
+          alert('User deleted successfully');
+          fetchAdminData();
+        })
+        .catch((error) => {
+          console.error('Error deleting user:', error);
+          alert('Failed to delete user');
+        });
+    }
+  };
+
+  // Handle Edit Email Click
+  const handleEditEmailClick = () => {
+    setEditingEmail(true);
+  };
+
+  // Handle Email Input Change
+  const handleEmailInputChange = (e) => {
+    const { name, value } = e.target;
+    setEmailFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  // Handle Email Form Submit (uses PATCH method)
+  const handleEmailFormSubmit = (e) => {
+    e.preventDefault();
+    axiosInstance.patch('/api/user/update-email/', emailFormData)
+      .then((res) => {
+        alert('Email updated successfully');
+        setEditingEmail(false);
+        // Update the displayed email
+        setEmailFormData({ email: res.data.email });
+      })
+      .catch((error) => {
+        console.error('Error updating email:', error);
+        // Display specific error messages if available
+        if (error.response && error.response.data) {
+          alert(`Failed to update email: ${JSON.stringify(error.response.data)}`);
+        } else {
+          alert('Failed to update email');
+        }
+      });
+  };
+
+  // Inline styles
+  //     .then(() => navigate('/login'))
+  //     .catch(() => alert('Logout failed'));
+  // };
 
   const handleQuizNavigation = () => {
     navigate('/prompt-generator');
@@ -145,6 +290,22 @@ function Dashboard() {
     fontSize: '2rem',
   };
 
+  const smallButtonStyle = {
+    padding: '5px 10px',
+    fontSize: '0.8em',
+    marginRight: '5px',
+    backgroundColor: '#4CAF50',
+    color: 'white',
+    border: 'none',
+    borderRadius: '4px',
+    cursor: 'pointer',
+  };
+
+  const deleteButtonStyle = {
+    ...smallButtonStyle,
+    backgroundColor: 'red',
+  };
+
   return (
     <div style={pageStyle}>
       <div>
@@ -189,17 +350,17 @@ function Dashboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  {userApiConsumption.map((stat) => (
-                    <tr key={stat.user__id}>
-                      <td style={tdStyle}>{stat.user__id}</td>
-                      <td style={tdStyle}>{stat.user__username}</td>
-                      <td style={tdStyle}>{stat.user__email}</td>
+                  {userApiConsumption.map((stat, index) => (
+                    <tr key={index}>
+                      <td style={tdStyle}>{stat.user_id}</td>
+                      <td style={tdStyle}>{stat.username}</td>
+                      <td style={tdStyle}>{stat.email}</td>
                       <td style={tdStyle}>{stat.total_requests}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
-
+              
               <h3>All Users:</h3>
               <table style={tableStyle}>
                 <thead>
@@ -249,6 +410,20 @@ function Dashboard() {
       </div>
     </div>
   );
+
+  // Function to make LLM API Call
+  const makeLlmApiCall = () => {
+    axiosInstance.post('/api/llm-call/')
+      .then((response) => {
+        alert(`LLM Response: ${response.data.data}`);
+        // Update API calls count
+        setApiCalls(prevCalls => prevCalls + 1);
+      })
+      .catch((error) => {
+        console.error('Error making LLM API call:', error);
+        alert('Failed to make LLM API call');
+      });
+  };
 }
 
 export default Dashboard;
