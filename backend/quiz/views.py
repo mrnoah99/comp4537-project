@@ -9,10 +9,10 @@ import hmac
 import time
 
 # Tuya API credentials
-CLIENT_ID = "your-client-id"
-CLIENT_SECRET = "your-client-secret"
-DEVICE_ID = "your-device-id"
-BASE_URL = "https://openapi.tuyaus.com"  # Adjust based on your region
+CLIENT_ID = "5pdtm7ynqv7q9m4nkatk"
+CLIENT_SECRET = "98cef96e4cb6434883ae81f000e76a62"
+DEVICE_ID = "50088717d8bfc0c220ea"
+BASE_URL = "https://openapi.tuyaus.com"  
 
 def get_access_token():
     """Get an access token from Tuya API"""
