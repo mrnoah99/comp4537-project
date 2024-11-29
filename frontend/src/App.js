@@ -5,6 +5,7 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import NotFound from './pages/NotFound';
 import PromptGenerator from './pages/PromptGenerator';
+import './App.css';
 
 
 function App() {

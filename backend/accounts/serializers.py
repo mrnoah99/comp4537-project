@@ -1,24 +1,36 @@
 from rest_framework import serializers
-from .models import CustomUser
+from .models import CustomUser, APIUsage
 from django.contrib.auth.hashers import make_password
 
 class UserSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True)
+    password = serializers.CharField(write_only=True, required=False)
 
     class Meta:
-        model = CustomUser  # Corrected assignment
-        fields = ('id', 'username', 'email', 'password', 'api_calls')
+        model = CustomUser
+        fields = ('id', 'username', 'email', 'password', 'api_calls', 'is_superuser')
+        read_only_fields = ('id', 'is_superuser')
 
     def create(self, validated_data):
-        validated_data['password'] = make_password(validated_data['password'])
-        user = CustomUser.objects.create(
-            username=validated_data['username'],
-            email=validated_data['email'],
-            password=validated_data['password'],
-        )
+        password = validated_data.pop('password', None)
+        if not password:
+            raise serializers.ValidationError({"password": "Password is required"})
+        user = CustomUser(**validated_data)
+        user.set_password(password)
+        user.save()
         return user
+
+    def update(self, instance, validated_data):
+        password = validated_data.pop('password', None)
+        if password:
+            instance.set_password(password)
+        return super().update(instance, validated_data)
 
 class UserListSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ('id', 'username', 'email', 'api_calls')
+        fields = ['id', 'username', 'email', 'api_calls', 'is_superuser']
+
+class APIUsageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = APIUsage
+        fields = '__all__'

@@ -130,10 +130,30 @@ Access the frontend in your browser at http://localhost:3000.
 
 ## API Endpoints
 
-| Endpoint       | Method | Description                        | Auth Required |
-|----------------|--------|------------------------------------|---------------|
-| /api/register/ | POST   | Register a new user               | No            |
-| /api/login/    | POST   | Log in a user and get token       | No            |
-| /api/user/     | GET    | Get current user profile          | Yes           |
-| /api/users/    | GET    | Get list of all users (admin-only)| Yes           |
+## API Endpoints
 
+| Endpoint                         | Method | Description                                   | Auth Required |
+|----------------------------------|--------|-----------------------------------------------|---------------|
+| /api/register/                   | POST   | Register a new user                           | No            |
+| /api/login/                      | POST   | Log in a user and get token                   | No            |
+| /api/logout/                     | POST   | Log out the current user                      | Yes           |
+| /api/user/                       | GET    | Get current user profile                      | Yes           |
+| /api/users/                      | GET    | Get list of all users (admin-only)            | Yes           |
+| /api/users/<int:pk>/update/      | PUT    | Update a user (admin-only)                    | Yes           |
+| /api/users/<int:pk>/delete/      | DELETE | Delete a user (admin-only)                    | Yes           |
+| /api/api-usage/                  | GET    | Get list of all API usages (admin-only)       | Yes           |
+| /api/endpoint-stats/             | GET    | Get statistics for all endpoints (admin-only) | Yes           |
+| /api/user-api-consumption/       | GET    | Get API consumption per user (admin-only)     | Yes           |
+| /api/llm-call/                   | POST   | Make an API call to the LLM model             | Yes           |
+| /api/api-usage/create/           | POST   | Create a new API usage record (admin-only)    | Yes           |
+| /api/token/refresh/              | POST   | Refresh the authentication token              | No            |
+| /api/user/update-email/          | PATCH  | Update user's own email                       | Yes            |
+
+**Notes:**
+
+- `<int:pk>` represents the primary key (ID) of the user.
+- **Auth Required** indicates whether the endpoint requires authentication. Admin-only endpoints require the user to be an admin.
+
+## Usage of AI
+
+In creation of this assignment, chatGPT, Gemeni and Copilot were used
