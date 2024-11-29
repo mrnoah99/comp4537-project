@@ -183,4 +183,5 @@ coverage/
 migrations/
 
 # Project info docs
-milestone1Group4.*
+*.pdf
+*.docx

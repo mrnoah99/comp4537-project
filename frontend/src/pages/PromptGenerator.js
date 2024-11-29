@@ -6,47 +6,162 @@ import { useNavigate } from 'react-router-dom';
 
 function PromptGenerator() {
     const prompts = [
-        "Tell me a story about a brave knight.",
-        "What is an interesting fact about space?",
-        "Explain the theory of relativity in simple terms.",
-        "Give me some advice for staying productive.",
-        "What are the benefits of learning a new language?",
-        "What is the most popular video game in the world?",
-        "What is the most popular song in the world?",
-        "Who is the most popular singer/band in the world?",
-        "What is the most successful video game of all time?",
-        "What is the most successful board game of all time?",
-        "Tell me a story about a misunderstood scary monster.",
-        "Give me some advice on budgeting.",
-        "How many planets, dwarf planets, and stars are in our solar system? What colours are they? Answer in a list format.",
-        "What year was the United States founded? What year did it gain its independence from Britain?",
-        "What year was Canada founded? What year did it gain its independence from Britain?",
-        "What company developed the Starcraft series of video games?",
-        "What is the company Valve known most for?",
-        "What company develops the Call of Duty series of video games?",
-        "What is the YouTube platform? Who is the most popular creator on it?",
-        "How old is the oldest video game?",
-        "When was the first computer invented?",
-        "What year did the United States land a man on the moon?",
-        "What exponent base is used most often in computing?",
-        "Tell me a story of a pretty princess.",
-        "How many pieces of hardware compose a FULL computer setup? What are each of their names?",
-        "What company developed the original Halo video game trilogy?",
-        "What company develops the newest Halo video games?",
-        "How many Halo video games are there? What are their names? Answer in a list format.",
-        "What does RAM stand for in computing?",
-        "What does the CPU do in a computer?",
-        "What does the GPU do in a computer?",
-        "What are the most common Operating Systems for a computer?",
-        "Who is the British Army man from World War 2 that is accredited as 'the father of the modern computer'?",
-        "What is the difference between RAM and ROM in computing?"
+        {
+            Question: "When was the first computer invented?",
+            Options: ["A. 1960", "B. 1892", "C. 1871", "D. 1937"],
+            Answer: "C"
+        },
+        {
+            Question: "What exponent base is used most often in computing?",
+            Options: ["A. 1", "B. 4", "C. 10", "D. 2"],
+            Answer: "D"
+        },
+        {
+            Question: "How many pieces of hardware compose a full computer setup? What are each of their names?",
+            Options: [
+                "A. 72. Too many to name.",
+                "B. 8. CPU, GPU, Storage, Keyboard, Mouse, Sound Device, Monitor(s), Hardware Controller.",
+                "C. 6. Computer, Monitor(s), Keyboard, Mouse, Hard Drive(s), Audio Device.",
+                "D. 11. CPU, GPU, RAM, Motherboard, Hard Drive(s), Power Supply, Case, Monitor(s), Keyboard, Mouse, Audio Device."
+            ],
+            Answer: "D"
+        },
+        {
+            Question: "What does RAM stand for in computing?",
+            Options: ["A. Rapid Access Memory", "B. Rated Area Memory", "C. Random Access Memory", "D. Read Area Memory"],
+            Answer: "C"
+        },
+        {
+            Question: "What does the CPU do in a computer?\n",
+            Options: [
+                "A. Process thousands to millions of math calculations per second.",
+                "B. Count processes and track them.",
+                "C. Calculate Potential Underperformances",
+                "D. Centralize all computing to one place."
+            ],
+            Answer: "A"
+        },
+        {
+            Question: "What does the GPU do in a computer?",
+            Options: [
+                "A. Process graphic data to make it less disturbing.",
+                "B. Process thousands to millions of math calculations per second.",
+                "C. Process thousands to millions of math calculations per second, specifically relating to graphics.",
+                "D. Graph your computer's power consumption over time."],
+            Answer: "C"
+        },
+        {
+            Question: "What are the most common Operating Systems for a computer?",
+            Options: ["A. Microsoft, Apple, Ubuntu", "B. Windows, Mac, Linux", "C. Mint, GNU, Ubuntu", "D. None, operating systems are fake."],
+            Answer: "B"
+        },
+        {
+            Question: "What is the difference between RAM and ROM in computing?",
+            Options: [
+                "A. RAM is memory used to quickly store and retrieve data, while ROM is used for storing hard-coded instructions and can only be retrieved.",
+                "B. RAM is internal memory and therefore faster, while ROM is external and therefore slower.",
+                "C. RAM is Random Access and therefore cannot be used to store important data, while ROM is Read Only and cannot be written to in the first place.",
+                "D. RAM stores information, while ROM is used to retrieve it."
+            ],
+            Answer: "A"
+        },
+        {
+            Question: "What commands in SQL do you use to create a table called 'Students' and add the student named 'John'?",
+            Options: [
+                "A. MAKE TABLE Students (name VARCHAR(50) + ADD_TO Students VALUES('John')",
+                "B. BUILD TABLE Students (name VARCHAR(50) + PUT_IN Students VALUES('John')",
+                "C. CREATE TABLE Students (name VARCHAR(50) + INSERT INTO Students VALUES('John')",
+                "D. CREATE TABLE Students COLUMNS(name) TYPES(VARCHAR(50) + INSERT INTO Students VALUES(name='John')"
+            ],
+            Answer: "C"
+        },
+        {
+            Question: "What method do you call in Java to print to the console?",
+            Options: ["A. Console.print()", "B. System.out.println()", "C. System.out.log()", "D. System.in.print()"],
+            Answer: "B"
+        },
+        {
+            Question: "In Python, how are functions declared?",
+            Options: [
+                "A. Using the 'function' keyword followed by the function name.",
+                "B. Using the 'def' keyword followed by the function name.",
+                "C. Using the 'declare' keyword followed by the function name.",
+                "D. Using the 'fun' keyword followed by the function name."
+            ],
+            Answer: "B"
+        },
+        {
+            Question: "In Python, how does the interpreter know what lines of code belong to what functions, since Python does not use '{}' for its functions?",
+            Options: ["A. Using the 'end' keyword.", "B. Using brackets []", "C. Using semicolons ;", "D. Indentation"],
+            Answer: "D"
+        },
+        {
+            Question: "What are the access modifiers in Java?",
+            Options: [
+                "A. public, protected, static, transient",
+                "B. public, protected, final, virtual",
+                "C. public, private, protected, package",
+                "D. public, private, override, static"
+            ],
+            Answer: "C"
+        },
+        {
+            Question: "What HTML tag is commonly used for organizing children tags?",
+            Options: ["A. <ID>", "B. <main>", "C. <div>", "D. <li>"],
+            Answer: "C"
+        },
+        {
+            Question: "What HTML tag is commonly used for text?",
+            Options: ["A. <p>", "B. <text>", "C. <content>", "D. <span>"],
+            Answer: "A"
+        },
+        {
+            Question: "What HTML tag is used to display an image?",
+            Options: ["A. <img>", "B. <image>", "C. <picture>", "D. <src>"],
+            Answer: "A"
+        },
+        {
+            Question: "What HTML tag is used to gather information from the user?",
+            Options: ["A. <a>", "B. <post>", "C. <input>", "D. <submit>"],
+            Answer: "C"
+        },
+        {
+            Question: "How do you access an HTML element in JavaScript?",
+            Options: [
+                "A. document.acessElement('elementid')",
+                "B. window.getHTML('elementid')",
+                "C. page.queryElement('elementid')",
+                "D. document.getElementById('elementid')"
+            ],
+            Answer: "D"
+        },
+        {
+            Question: "What property would you modify in JavaScript to change the text of an <input> element?",
+            Options: ["A. textContent", "B. value", "C. innerText", "D. text"],
+            Answer: "B"
+        },
+        {
+            Question: "What are the different scopes of variable declaration in JavaScript?",
+            Options: [
+                "A. Static, Dynamic, Volatile",
+                "B. Local, Network, Browser",
+                "C. Public, Private, Protected",
+                "D. Global, Function, Block"
+            ],
+            Answer: "D"
+        },
     ];
 
     const [loading, setLoading] = useState(false);
     const [apiCalls, setApiCalls] = useState(0);
     const [hasExceededLimit, setHasExceededLimit] = useState(false);
+    const [questionActivated, setQuestionActive] = useState(false);
+    const [userQuestionCorrect, setUserQuestion] = useState(false);
+    const [aiQuestionCorrect, setAIQuestion] = useState(false);
     const navigate = useNavigate();
     let selectedPrompt = "";
+    let userTempAnswer = "";
+    let userAnswer = "";
 
     useEffect(() => {
         axiosInstance.get('/api/user/')
@@ -65,7 +180,7 @@ function PromptGenerator() {
     const setSelectedPrompt = () => {
         selectedPrompt = prompts[Math.floor(Math.random() * prompts.length)];
         let promptElement = document.getElementById('prompt');
-        promptElement.textContent = selectedPrompt;
+        promptElement.textContent = selectedPrompt.Question;
     };
 
     const setOutput = (responseString) => {
@@ -73,13 +188,56 @@ function PromptGenerator() {
         output.value = responseString;
     };
 
+    const setA = () => {userTempAnswer = "A"};
+    const setB = () => {userTempAnswer = "B"};
+    const setC = () => {userTempAnswer = "C"};
+    const setD = () => {userTempAnswer = "D"};
+
+    const answerWarning = document.getElementById("warning");
+    
+    const setUserAnswer = () => {
+        if (userTempAnswer != "") {
+            userAnswer = userTempAnswer;
+            answerWarning.textContent = "";
+        } else{
+            answerWarning.textContent = "You need to select an answer.";
+        }
+    };
+
+    const handleQuestion = (aiAnswer) => {
+        if (aiAnswer == selectedPrompt.Answer) {
+            setAIQuestion(true);
+        } else {
+            setAIQuestion(false);
+        }
+        if (userAnswer == selectedPrompt.Answer) {
+            setUserQuestion(true);
+        } else {
+            setUserQuestion(false);
+        }
+        setQuestionActive(true);
+        userAnswer = "";
+        userTempAnswer = "";
+    }
+
     const handleGenerate = () => {
         setSelectedPrompt();
         setLoading(true);
-        axiosInstance.post('https://bright-brain.ca/generate', { prompt: selectedPrompt })
+        setQuestionActive(false);
+        let finalPrompt = selectedPrompt.Question + " Select from one of the following:\n";
+        selectedPrompt.Options.forEach(element => {
+            finalPrompt += element + "\n"
+        });
+        for (let i = 0; i < 4; i++) {
+            let docElement = document.getElementById("option-" + i + "-lbl");
+            docElement.textContent = selectedPrompt.Options[i];
+        }
+        axiosInstance.post('https://bright-brain.ca/api/v7', { prompt: finalPrompt })
             .then((response) => {
                 console.log("API response:", response.data);
-                setOutput(response.data.response);
+                while (userAnswer == "") {}
+                setOutput("The AI guessed: " + response.data.response);
+                if (userAnswer != "") handleQuestion(response.data.response);
             })
             .catch((error) => {
                 console.error("Error:", error);
@@ -185,17 +343,61 @@ function PromptGenerator() {
             </div>
 
             <div style={containerStyle}>
-                <h3 style={{ marginBottom: '20px' }}>Random Prompt Generator</h3>
-                <p style={promptStyle}><strong>Prompt:</strong> <span id="prompt"></span></p>
+                <h2 style={{ marginBottom: '20px' }}>Are you smarter than an AI?</h2>
+                <p style={promptStyle}><strong>Question:</strong> <span id="prompt"></span></p>
+                <p id="warning" style={{ color: "red" }}></p>
                 <button onClick={handleGenerate} style={buttonStyle} disabled={loading}>
-                    {loading ? 'Generating...' : 'Generate Response'}
+                    {loading ? 'Generating...' : 'Generate Question + AI Answer'}
                 </button>
+                <form>
+                    <input type="radio" id="option-0" onClick={setA} />
+                    <label htmlFor="option-0" id="option-0-lbl"></label>
+                    <br />
+                    <input type="radio" id="option-1" onClick={setB} />
+                    <label htmlFor="option-1" id="option-1-lbl"></label>
+                    <br />
+                    <input type="radio" id="option-2" onClick={setC} />
+                    <label htmlFor="option-2" id="option-2-lbl"></label>
+                    <br />
+                    <input type="radio" id="option-3" onClick={setD} />
+                    <label htmlFor="option-3" id="option-3-lbl"></label>
+                    <br />
+                </form>
+                <button style={buttonStyle} onClick={setUserAnswer}>Submit</button>
                 <textarea
                     id="output"
                     readOnly
-                    placeholder="Output will appear here..."
+                    placeholder="AI answer will appear here..."
                     style={textAreaStyle}
                 />
+                <div>
+                    {questionActivated && (
+                        <div>
+                            {userQuestionCorrect && (
+                                <p>
+                                    You got the question right!
+                                    {aiQuestionCorrect && (
+                                        <span> The AI got the question right!</span>
+                                    )}
+                                    {!aiQuestionCorrect && (
+                                        <span> The AI got the question wrong!</span>
+                                    )}
+                                </p>
+                            )}
+                            {!userQuestionCorrect && (
+                                <p>
+                                    You got the question wrong!
+                                    {aiQuestionCorrect && (
+                                        <span> The AI got the question right!</span>
+                                    )}
+                                    {!aiQuestionCorrect && (
+                                        <span> The AI got the question wrong!</span>
+                                    )}
+                                </p>
+                            )}
+                        </div>
+                    )}
+                </div>
                 {hasExceededLimit && (
                     <p style={{ color: 'red', marginTop: '20px' }}>
                         You have exceeded your 20 API calls.

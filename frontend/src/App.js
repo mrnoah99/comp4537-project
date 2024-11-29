@@ -17,7 +17,7 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         {/* Catch-all route for 404 Not Found */}
         <Route path="*" element={<NotFound />} />
-        <Route path="/prompt-generator" element={<PromptGenerator />} />
+        <Route path="/quiz" element={<PromptGenerator />} />
       </Routes>
     </Router>
   );
