@@ -198,7 +198,7 @@ function Dashboard() {
   // };
 
   const handleQuizNavigation = () => {
-    navigate('/prompt-generator');
+    navigate('/quiz');
   };
 
   const pageStyle = {
